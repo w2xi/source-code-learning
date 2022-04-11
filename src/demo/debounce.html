@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo - Debounce (防抖)</title>
+  <style>
+    body {
+      margin: 0;
+    }
+    body {
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #container {
+      height: 90vh;
+      width: 100vw;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #eee;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <div class="btn-wrapper">
+    <button id="btn">cancel debounce</button>
+  </div>
+
+  <script>
+    // Reference: https://github.com/mqyqingfeng/Blog/issues/22
+
+    // 防抖的原理就是：
+    // 你尽管触发事件，但是我一定在事件触发 n 秒后才执行，
+    // 如果你在一个事件触发的 n 秒内又触发了这个事件，那我就以新的事件的时间为准，n 秒后才执行，
+    // 总之，就是要等你触发完事件 n 秒内不再触发事件，我才执行，真是任性呐!
+
+    var box = document.getElementById('container')
+    var count = 0
+
+    box.innerHTML = count
+
+    var debounce = function(fn, delay, immediate = false) {
+      var timer, result
+
+      var debounced = function(ev){
+        // the this point to the box element
+        var self = this
+        var args = arguments
+
+        clearTimeout(timer)
+
+        if (immediate) {
+          var callNow = !timer
+
+          timer = setTimeout(function(){
+            timer = null
+          }, delay)
+          
+          if ( callNow ) {
+            result = fn.apply(self, args)
+          }
+        } else {
+          timer = setTimeout(function(){
+            fn.apply(self, args)
+          }, delay)
+        }
+
+        return result
+      }
+
+      debounced.cancel = function(){
+        clearTimeout(timer)
+        timer = null
+      }
+
+      return debounced
+    }
+
+    var handler = debounce(function(ev){
+      box.innerHTML = ++count
+    }, 3000, true)
+
+    box.addEventListener('mousemove', handler);
+
+    btn.addEventListener('click', function(){
+      // cancel debounce
+      handler.cancel()
+    })
+  </script>
+</body>
+</html>
