@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo - Throttle</title>
+  <link rel="stylesheet" href="./assets/main.css" />
+  <style>
+    #container {
+      height: 90vh;
+    }
+    #btn-wrapper {
+      width: 100%;
+      height: 10vh;
+      background-color: #efefef;
+      text-align: center;
+      line-height: 10vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="container"></div>
+  <div id="btn-wrapper">
+    <button id="btn">cancel throttle</button>
+  </div>
+
+  <script>
+    // Reference: https://github.com/mqyqingfeng/Blog/issues/26
+    
+    // 节流的原理很简单：
+    // 如果你持续触发事件，每隔一段时间，只执行一次事件。
+    // 根据首次是否执行以及结束后是否执行，效果有所不同，实现的方式也有所不同。
+    // 我们用 leading 代表首次是否执行，trailing 代表结束后是否再执行一次。
+
+    var throttle = function(fn, delay, options){
+      var lastTime = 0, timeout
+      
+      options || (options = {})
+
+      // leading：false 表示禁用第一次执行
+      // trailing: false 表示禁用停止触发的回调
+      var leading = options.leading
+      var trailing = options.trailing
+
+      var throttled = function(){
+        var now = Date.now()
+
+        if (!leading && !lastTime) {
+          lastTime = now
+        }
+
+        // 剩余的时间
+        var remaining = delay - (now - lastTime)
+
+        if (remaining <= 0 || remaining > delay) {
+          if (timeout) {
+            clearTimeout(timeout)
+            timeout = null
+          }
+
+          lastTime = now
+          fn.apply(this, arguments)
+        } else if (!timeout && trailing) {
+          timeout = setTimeout(() => {
+            lastTime = leading ? Date.now() : 0
+            timeout = null
+            fn.apply(this, arguments)
+          }, remaining)
+        }
+      }
+
+      throttled.cancel = function(){
+        clearTimeout(timeout)
+        lastTime = 0
+        timeout = null
+      }
+
+      return throttled
+    }
+
+    var container = document.getElementById('container');
+    var count = 0;
+    container.innerHTML = count;
+    var throttled = throttle(function() {
+      count++;
+      container.innerHTML = count;
+    }, 1000, { trailing: true });
+
+    container.addEventListener('mousemove', throttled);
+    btn.addEventListener('click', function() {
+      throttled.cancel();
+    });
+  </script>
+</body>
+</html>
