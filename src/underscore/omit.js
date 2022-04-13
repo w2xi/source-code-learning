@@ -1,17 +1,17 @@
 const _ = require('underscore');
-const { fakeFlatten } = require('./fakeFlatten')
-const { fakePick } = require('./fakePick')
+const flatten = require('./flatten')
+const pick = require('./pick')
 
 // const obj = { a: 'a', b: 'b', c: 'c' }
 
 // console.log(_.omit(obj, ['b']))
 
-// console.log(fakeOmit(obj, ['a', ['b', ['c']]]))
+// console.log(omit(obj, ['a', ['b', ['c']]]))
 
-function fakeOmit(obj, keys) { 
+function omit(obj, keys) { 
   const pickKeys = []
 
-  keys = fakeFlatten(keys, Infinity)
+  keys = flatten(keys, Infinity)
 
   for ( let key in obj ) {
     if (Object.prototype.hasOwnProperty.call(obj, key) && !~keys.indexOf(key) ) {
@@ -21,7 +21,7 @@ function fakeOmit(obj, keys) {
 
   // omit 与 pick 是相反的操作
 
-  return fakePick(obj, pickKeys)
+  return pick(obj, pickKeys)
 }
 
-exports.fakeOmit = fakeOmit
+module.exports = omit

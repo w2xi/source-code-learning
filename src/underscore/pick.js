@@ -1,17 +1,17 @@
 const _ = require('underscore');
-const { fakeFlatten } = require('./fakeFlatten')
+const flatten = require('./flatten')
 
 // const ret = _.pick({ a: 'a', b: 'b', c: 'c' }, ['a', ['b', ['c']]])
 // console.log(ret); // { a: 'a', b: 'b', c: 'c' }
 
-// console.log(fakePick({ a: 'a', b: 'b', c: 'c' }, ['a']))
-// console.log(fakePick({ a: 'a', b: 'b', c: 'c' }, ['a', ['b', ['c']]]))
+// console.log(pick({ a: 'a', b: 'b', c: 'c' }, ['a']))
+// console.log(pick({ a: 'a', b: 'b', c: 'c' }, ['a', ['b', ['c']]]))
 
-function fakePick(obj, keys) {
+function pick(obj, keys) {
   const result = {}
 
   obj = Object(obj)
-  keys = fakeFlatten(keys, Infinity)
+  keys = flatten(keys, Infinity)
 
   for ( let i = 0; i < keys.length; i++ ) {
     const key = keys[i]
@@ -24,4 +24,4 @@ function fakePick(obj, keys) {
   return result
 }
 
-exports.fakePick = fakePick
+module.exports = pick
