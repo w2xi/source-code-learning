@@ -1,0 +1,1 @@
+module.exports = Number.isNaN || function(value){ return value !== value }
