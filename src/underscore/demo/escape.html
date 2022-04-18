@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo - Escape (转义)</title>
+  <link rel="stylesheet" href="assets/main.css">
+</head>
+<body>
+  <div id="container"></div>
+  <script>
+    // Reference: 
+    // http://underscorejs.org/#escape
+    // https://github.com/mqyqingfeng/Blog/issues/77
+
+    const query = window.location.search
+    const params = new URLSearchParams(query)
+    const name = params.get('name')
+
+    console.log(name);
+
+    container.innerHTML = escape(name)
+    
+    const escapeMap = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#x27;',
+      '`': '&#x60;'
+    }
+
+    function escape(string){
+      const escaper = (match) => {
+        return escapeMap[match]
+      }
+
+      const source = Object.keys(escapeMap).join('|')
+      const testRegexp = RegExp(source)
+      const replaceRegexp = RegExp(source, 'g')
+      
+      string = string == null ? '' : '' + string
+
+      return testRegexp.test(string) ? string.replace(replaceRegexp, escaper) : string
+    }
+  </script>
+  
+  <!-- xss -->
+  <!-- <img src=@ onerror=alert(/xss/) /> -->
+  <!-- <img src=@ onerror="var script = document.createElement('script');script.src = 'https://cdn.bootcdn.net/ajax/libs/vue/3.2.33/vue.esm-browser.min.js';document.body.appendChild(script)" /> -->
+</body>
+</html>
