@@ -3,25 +3,28 @@ const path = require('path');
 
 function parse(src) {
   const obj = {};
-  console.log(src.toString().split('\n'))
-  console.log(src.toString().split('\n')[1] === '')
-  src.toString().split('\n').forEach(line => {
+  const arr = src.toString().split('\n');
+  
+  for (let line of arr) {
+    // 忽略空行，忽略注释, 忽略没有 '=' 的行
+    if (!line || line.startsWith('#') || !line.includes('=')) {
+      continue;
+    }
     const [key, val] = line.split('=');
+    // 去掉键值对首尾空格
     obj[key.trim()] = val.trim();
-  });
+  }
+
   return obj;
 }
-
-// 1. 读取 .env 文件
-// 2. 解析 .env 文件拆成键值对的对象形式
-// 3. 赋值到 process.env 上
-// 4. 最后返回解析后得到的对象
 
 function config() {
   const filename = path.resolve(__dirname, '.env');
   const contents = fs.readFileSync(filename, 'utf-8');
   const result = parse(contents);
   const keys = Reflect.ownKeys(result);
+
+  console.log(result);
 
   for (let key of keys) {
     if (!Reflect.has(process.env, key)) {
